@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "homework",
+  "description": "Complete a pasted school assignment end-to-end, humanize the writing, and verify it against zerogpt.com before delivering.",
+  "version": "1.0.0",
+  "author": {
+    "name": "lawnmower321",
+    "url": "https://github.com/lawnmower321"
+  },
+  "homepage": "https://github.com/lawnmower321/homework-skill",
+  "repository": "https://github.com/lawnmower321/homework-skill",
+  "license": "MIT",
+  "keywords": ["homework", "writing", "humanize", "ai-detection", "zerogpt"],
+  "skills": ["./"]
+}

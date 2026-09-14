@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
+  "name": "homework",
+  "owner": {
+    "name": "lawnmower321",
+    "url": "https://github.com/lawnmower321"
+  },
+  "description": "Install Homework as a Claude plugin.",
+  "plugins": [
+    {
+      "name": "homework",
+      "source": "./",
+      "description": "Complete a pasted school assignment end-to-end, humanize the writing, and verify it against zerogpt.com before delivering.",
+      "license": "MIT",
+      "keywords": ["homework", "writing", "humanize", "ai-detection", "zerogpt"]
+    }
+  ]
+}

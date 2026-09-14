@@ -1,0 +1,10 @@
+{
+  "name": "homework-zerogpt-check",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Headless-browser AI-detection check against zerogpt.com, used by the homework skill.",
+  "main": "zerogpt_check.js",
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}
