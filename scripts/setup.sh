@@ -14,14 +14,25 @@ if [ "$(uname -s)" != "Darwin" ]; then
   CACHE_DIR="${PLAYWRIGHT_BROWSERS_PATH:-$HOME/.cache/ms-playwright}"
 fi
 
-if compgen -G "$CACHE_DIR"/chromium_headless_shell-*/INSTALLATION_COMPLETE > /dev/null 2>&1 || \
-   compgen -G "$CACHE_DIR"/chromium_headless_shell-*/INSTALLATION_COMPLETE.* > /dev/null 2>&1; then
+# Revision-aware: the shared browser cache may hold shells from other Playwright
+# installs (1228/1234), while this package pins its own revision — a blind glob
+# here once skipped the install and every check failed at launch.
+EXPECTED_REV=""
+if [ -d node_modules/playwright-core ]; then
+  EXPECTED_REV="$(node -e "const b=require('./node_modules/playwright-core/browsers.json').browsers.find(x=>x.name==='chromium-headless-shell'); console.log(b?b.revision:'')" 2>/dev/null || true)"
+fi
+
+if [ -n "$EXPECTED_REV" ] && [ -f "$CACHE_DIR/chromium_headless_shell-$EXPECTED_REV/INSTALLATION_COMPLETE" ]; then
+  echo "Chromium headless shell $EXPECTED_REV already installed."
+  exit 0
+fi
+if [ -z "$EXPECTED_REV" ] && compgen -G "$CACHE_DIR"/chromium_headless_shell-*/INSTALLATION_COMPLETE > /dev/null 2>&1; then
   echo "Chromium headless shell already installed."
   exit 0
 fi
 
-echo "Installing Chromium headless shell via playwright..."
-if timeout 60 npx playwright install chromium-headless-shell 2>&1; then
+echo "Installing Chromium headless shell r${EXPECTED_REV:-?} via playwright..."
+if npx playwright install chromium-headless-shell 2>&1; then
   echo "Done."
   exit 0
 fi
