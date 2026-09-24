@@ -10,7 +10,7 @@
     {
       "name": "homework",
       "source": "./",
-      "description": "Complete a pasted school assignment end-to-end, humanize the writing, and verify it against zerogpt.com before delivering.",
+      "description": "Card-based homework pipeline: Canvas intake, AI-policy gates, evidence-locked drafting, humanize with integrity check, zerogpt verification.",
       "license": "MIT",
       "keywords": ["homework", "writing", "humanize", "ai-detection", "zerogpt"]
     }

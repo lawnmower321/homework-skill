@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "homework",
-  "description": "Complete a pasted school assignment end-to-end, humanize the writing, and verify it against zerogpt.com before delivering.",
-  "version": "1.0.0",
+  "description": "Card-based homework pipeline: one-click Canvas intake (prompt, rubric, due/lock, attempts), AI-policy/state gates, requirement matrix + evidence-locked drafting, humanize with integrity check, bounded zerogpt.com verification, plain-text delivery.",
+  "version": "2.0.0",
   "author": {
     "name": "lawnmower321",
     "url": "https://github.com/lawnmower321"
