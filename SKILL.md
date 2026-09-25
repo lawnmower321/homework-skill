@@ -69,8 +69,12 @@ need. Never dump a whole page or PDF into context.
 
 ## EXECUTION CARDS
 
+Checkpoint root: `~/.hermes/cache/hw/<assignment_id>/` — `mkdir -p` on the first
+card; a fixed path, never `mktemp` (resume only works if it's stable). Every
+"scratchpad" mention below resolves here.
+
 Run in order. Each card: ACTION → OUTPUT → GATE. Write OUTPUT to
-`<scratchpad>/hw/<assignment_id>/cardN.md` before starting the next card; that file
+`~/.hermes/cache/hw/<assignment_id>/cardN.md` before starting the next card; that file
 is the persisted chain-of-thought. Do not start Card N+1 until the GATE passes. If a
 gate fails, resolve it or stop — never route around it.
 
@@ -92,16 +96,27 @@ gate fails, resolve it or stop — never route around it.
 
 ### CARD 1 — GATES (first failure wins; announce one banner line)
 
-1. **Policy** — read the ledger
-   (`~/.hermes/skills/education/canvas-schoolwork/references/course-ai-policies.md`),
-   or call the toolkit's parser: `import policy; policy.gate(course_id)` →
-   `(state, reason)`:
+1. **Policy** — NEVER ask Brendan a course's AI policy. Artifacts decide, always:
+   `cd /root/school-agent && .venv/bin/python resolve_policy.py <course_id>` →
+   `{state, method, source, excerpt}` (~10s, no user input). Chain: ledger cache →
+   instructor syllabus (syllabus_body → files → pages, templates rejected) →
+   Lindenwood Student Handbook default (AI tools permitted "with honesty and good
+   intent"; instructor statements override — verified 2026-09-25). States:
    - `zero` → **MODE = PREP** (research, summaries, skeletons, study notes; no
      paste-ready prose, no "draft now, rewrite later"). State the reason once,
-     matter-of-fact. This wins over an explicit request to write.
-   - `unverified` → pull the syllabus (Canvas files API) and read the AI section now
-     with pymupdf; still unknown or user declines → **MODE = PREP**.
-   - `ok` → continue.
+     matter-of-fact. This wins over an explicit request to write. Kit recipe:
+     `~/.hermes/skills/education/canvas-schoolwork/references/prep-kit.md`.
+   - `ok` → continue. If `method == "university_default"` (no instructor statement
+     on file), add ONE FLAGS line on the first delivery for that course — "no
+     instructor AI statement on file; proceeding under the Lindenwood handbook
+     default — say so if your instructor said otherwise and I'll cache it" — then
+     never raise it again.
+   - `unreadable` → run the canvas-file-extraction OCR ladder, re-run the script;
+     still unresolved → make the conservative call yourself (PREP) and note it once
+     in FLAGS. A question about AI policy is always an avoidable round-trip.
+   - Non-ledger result → write it into the ledger row immediately (state + one-line
+     source note, then `python3 ~/.hermes/skills/education/canvas-schoolwork/scripts/verify_policy_gate.py`)
+     so the next run for that course is a cache hit.
 2. **Submission** — already graded → **MODE = REVIEW** (critique, not redo).
    Submitted but ungraded → REVIEW unless the user explicitly spends another attempt.
 3. **Lock** — `lock_at` passed → **MODE = RECOVER** (draft the email to the
@@ -225,7 +240,7 @@ ZeroGPT line is mandatory.
 
 ## CHECKPOINTING
 
-Every card writes `<scratchpad>/hw/<assignment_id>/cardN.md`. A rerun saying
+Every card writes `~/.hermes/cache/hw/<assignment_id>/cardN.md`. A rerun saying
 "resume" reads the highest existing card and continues from the next one. Each card
 is idempotent: re-running must not re-fetch or re-download what is already on disk.
 
@@ -247,6 +262,10 @@ is idempotent: re-running must not re-fetch or re-download what is already on di
    only the latest tool output counts.
 8. **Re-running Card 0 on resume** — read the highest `cardN.md` first; cards are
    idempotent by design.
+9. **Asking what a course's AI policy is.** `resolve_policy.py` answers from
+   ledger → syllabus → handbook default in seconds; the question is always
+   avoidable. After any non-ledger resolution, write the ledger row back or the
+   next run re-asks the machine the same thing.
 
 ## Verification Checklist
 
@@ -258,3 +277,4 @@ is idempotent: re-running must not re-fetch or re-download what is already on di
 - [ ] ZeroGPT line matches the last tool output (or `unverified` + reason), ≤4 attempts
 - [ ] Delivered as plain chat text with SOURCES + FLAGS; no Artifact/HTML sheet
 - [ ] Every fired edge case appears in FLAGS
+- [ ] Policy came from `resolve_policy.py` (never a question); non-ledger result written back to the ledger
